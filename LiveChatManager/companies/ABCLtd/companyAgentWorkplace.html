@@ -1,0 +1,326 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="http://localhost:10082/Files?file=jquery-3.1.1.js"></script>
+		<script type="text/javascript" src="http://localhost:10082/Files?file=socket.io.js"></script>
+		<link rel="stylesheet" href="http://localhost:10082/Files?file=companyAgentLiveChat.css">
+	</head>
+	<body>
+	    <H1>Hello, this is ABCLtd Customer Service Agent!</H1>
+		
+		<div id="lc-company-agent">
+		    <div class="lc-in-chat-UI-blocker"></div>
+			
+			<div id="lc-company-agent-header">Online Customers <span id="lc-total-online-customers">0</span></div>
+			
+			<table class="lc-content" cellspacing="0" cellpadding="0"><tbody>
+				<tr>
+					<td>
+						<table id="lc-online-customers"><tbody>
+						</tbody></table>
+					</td>
+					<td>
+						<table id="lc-chat-box" cellspacing="0" cellpadding="0"><tbody>
+							<tr id="lc-title-container"><td>
+								<a id="lc-title-row" class="lc-widget-header" href="#">
+									<span id="lc-close-chat" class="lc-title-button" data-title="Close the chat">x</span>		
+									<span id="lc-title-text"><span>Chat with&nbsp;</span><span id="lc-in-chat-customer"></span></span>
+								</a>					
+							</td></tr>
+							<tr id="lc-chat-container"><td>
+								<div id="lc-chatRecords"></div>
+							</td></tr>
+							<tr id="lc-chat-control"><td>
+								<div id="lc-sendMessage-container">
+									<div><input type="text" name="message" id="lc-message" class="lc-inputMessage"></div>
+									<div><input type="button" name="sendMessage" id="lc-sendMessage" value="Send Message" class="lc-sendMessageBtn"></div>
+								</div>
+							</td></tr>
+						</tbody></table>
+					</td>
+				</tr>
+			</tbody></table>
+		</div>
+		
+		<!-- Start of LiveChat code -->
+		<script type="text/javascript">
+			function setupLiveChat() {
+				var OPEN = 0, MSG = 1, CLOSE = 2, ERROR = 3;
+				var CHAT_MSG = "chat message";
+				var DISCONNECT = "disconnect";
+				var totalOnlineCustomers = 0;
+				var socket = null;
+				var onlineCustomers = {};
+				var selectors = {
+					ONLINE_CUSTOMERS : "#lc-online-customers",
+					CUSTOMER_BLOCK : "lc-customer-block",
+					CUSTOMER_BLOCK_ROW : "lc-customer-block-row",
+					CUSTOMER_DISPLAY_NAME : "lc-customer-display-name",
+					UNREAD_MESSAGES : "lc-unread-messages",
+					UNREAD_MESSAGES_COUNT : "count",
+					UNREAD_MESSAGES_COUNT_NUM : "lc-unread-messages-count",
+					CHAT_BOX : "#lc-chat-box",
+					CUSTOMER_ID : "customerId",
+					IN_CHAT_CUSTOMER : "#lc-chat-box #lc-in-chat-customer",
+					CHAT_RECORDS : "#lc-chat-box #lc-chatRecords",
+					CHAT_MESSAGE : "lc-chatMessage",
+					SEND_MSG_BTN : ".lc-sendMessageBtn",
+					INPUT_MSG : ".lc-inputMessage",
+					TOTAL_COUNT : "#lc-total-online-customers",
+					CLOSE_CHAT_BTN : "#lc-close-chat",
+					IN_CHAT_CUSTOMER_BLOCK : "lc-in-chat-customer-block",
+					TO_HANDLE_CUSTOMER_BLOCK : "lc-to-handle-customer-block",
+					IN_CHAT_UI_BLOCKER : ".lc-in-chat-UI-blocker",
+					HEADER : "#lc-company-agent-header"
+				};
+					
+				var styles = {
+					VISIBILITY : "visibility",
+					VISIBLE : "visible",
+					HIDDEN : "hidden"
+				};
+				
+				function Customer(id) {
+					this.id = id;
+					this.messages = new Array();
+					
+					if (typeof this.getCustomerBlockId !== "function") {
+						Customer.prototype.getCustomerBlockId = function() {
+							return selectors.CUSTOMER_BLOCK + "-" + this.id;
+						};
+					}
+					if (typeof this.updateToHandleMessages !== "function") {
+						Customer.prototype.updateToHandleMessages = function(reset) {
+							var unreadMessagesDom = $("#" + this.getCustomerBlockId() + " ." + selectors.UNREAD_MESSAGES);
+							var result;
+							if (reset) {
+								unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT, 0);
+								result = "0";
+							} else {
+								result = Number(unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT)) + 1;
+								unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT, result);
+							}
+							unreadMessagesDom.find("." + selectors.UNREAD_MESSAGES_COUNT_NUM).html(result);
+						};
+					}
+					if (typeof this.attachUI !== "function") {
+						Customer.prototype.attachUI = function() {
+							$(selectors.ONLINE_CUSTOMERS).append("<tr id='" + this.getCustomerBlockId() +
+							    "' class='" + selectors.CUSTOMER_BLOCK_ROW +
+								"'><td><a href='#'><div class='" + selectors.CUSTOMER_BLOCK +
+								"' " + selectors.CUSTOMER_ID + "='" + this.id + "'>" +
+								"<span class='" + selectors.CUSTOMER_DISPLAY_NAME + "'>" + this.id +
+								"</span><span class='" + selectors.UNREAD_MESSAGES + "' " +
+								selectors.UNREAD_MESSAGES_COUNT + "='0'>Unread Messages:&nbsp;<span class='" +
+								selectors.UNREAD_MESSAGES_COUNT_NUM + "'>0</span></div></a></td></tr>");
+						};
+					}
+					if (typeof this.detachUI !== "function") {
+						Customer.prototype.detachUI = function() {
+							$("#" + this.getCustomerBlockId()).remove();
+							if ($(selectors.CHAT_BOX).attr(selectors.CUSTOMER_ID) === this.id) {
+								$(selectors.CHAT_BOX).css(styles.VISIBILITY, styles.HIDDEN);
+								$(selectors.IN_CHAT_UI_BLOCKER).css(styles.VISIBILITY, styles.HIDDEN);
+							}
+						};
+					}
+					if (typeof this.getToAppendMsgStr !== "function") {
+						Customer.prototype.getToAppendMsgStr = function(msg) {
+							return "<div class='" + selectors.CHAT_MESSAGE + "'>" + msg + "</div>";
+						};
+					}
+					if (typeof this.refreshBlock !== "function") {
+						Customer.prototype.refreshBlock = function(inChat) {
+							var block = $("#" + this.getCustomerBlockId());
+							if (inChat) {
+								$("." + selectors.IN_CHAT_CUSTOMER_BLOCK).removeClass(selectors.IN_CHAT_CUSTOMER_BLOCK);
+								if (block.hasClass(selectors.TO_HANDLE_CUSTOMER_BLOCK)) {
+									block.removeClass(selectors.TO_HANDLE_CUSTOMER_BLOCK);
+								}
+								block.addClass(selectors.IN_CHAT_CUSTOMER_BLOCK);
+							} else {
+								if (!block.hasClass(selectors.TO_HANDLE_CUSTOMER_BLOCK)) {
+									block.addClass(selectors.TO_HANDLE_CUSTOMER_BLOCK);
+								}
+							}
+						};
+					}
+					if (typeof this.appendMsg !== "function") {
+						Customer.prototype.appendMsg = function(msg, fromSelf) {
+							msg = (fromSelf ? "Me : " : (this.id + " : ")) + msg;
+							this.messages.push(msg);
+							var chatBox = $(selectors.CHAT_BOX);
+							if ((chatBox.css(styles.VISIBILITY) !== styles.VISIBLE) || // Currently not-in-chat with this customer
+							    (chatBox.attr(selectors.CUSTOMER_ID) !== this.id)) {
+								this.updateToHandleMessages(false);
+							    this.refreshBlock(false);
+							} else { // Currently in-chat with this customer
+								$(selectors.CHAT_RECORDS).append(this.getToAppendMsgStr(msg));
+								$(selectors.CHAT_RECORDS)[0].scrollTop = $(selectors.CHAT_RECORDS)[0].scrollHeight;
+							}
+						};
+					}
+					if (typeof this.showChatBox !== "function") {
+						Customer.prototype.showChatBox = function() {
+							this.updateToHandleMessages(true);
+							
+							var chatBox = $(selectors.CHAT_BOX);
+							chatBox.attr(selectors.CUSTOMER_ID, this.id);
+							$(selectors.SEND_MSG_BTN).attr(selectors.CUSTOMER_ID, this.id);
+							$(selectors.IN_CHAT_CUSTOMER).html(this.id);
+							var customer = this;
+							
+							var chatRecords = "";
+							this.messages.forEach(function(item, index, array) {
+								chatRecords += customer.getToAppendMsgStr(item);
+							});
+							
+							$(selectors.CHAT_RECORDS).html(chatRecords);
+							$(selectors.CHAT_RECORDS)[0].scrollTop = $(selectors.CHAT_RECORDS)[0].scrollHeight;
+							
+							this.refreshBlock(true);
+							chatBox.css(styles.VISIBILITY, styles.VISIBLE);
+							$(selectors.IN_CHAT_UI_BLOCKER).css(styles.VISIBILITY, styles.VISIBLE);
+						};
+					}
+				}
+				
+				function updateTotalCount() {
+					$(selectors.TOTAL_COUNT).html(totalOnlineCustomers);
+				}
+				
+				function addCustomer(customerId) {
+					var customer = new Customer(customerId);
+					onlineCustomers[customerId] = customer;
+					customer.attachUI();
+					++totalOnlineCustomers;
+					updateTotalCount();
+				}
+				
+				function removeCustomer(customerId) {
+					var customer = onlineCustomers[customerId];
+					if (customer) {
+						customer.detachUI();
+						onlineCustomers[customerId] = null;
+						--totalOnlineCustomers;
+						if (totalOnlineCustomers < 0) totalOnlineCustomers = 0;
+						updateTotalCount();
+					}
+				}
+				
+				function shutDown(msg) {
+					for (var id in onlineCustomers) {
+						removeCustomer(id);
+					}
+					$(selectors.HEADER).html(msg);
+				}
+				
+				function addMessage(customerId, msg, fromSelf) {
+					var customer = onlineCustomers[customerId];
+					if (customer) {
+						customer.appendMsg(msg, fromSelf);
+					}
+				}
+				
+				function getMsgStr(message) {
+					if (!message) {
+						return null;
+					}
+					var msgData = JSON.parse(message);
+					if (!msgData) {
+						return null;
+					}
+					var customerId = msgData.customerId;
+					var type = msgData.type;
+					var result = customerId + ": ";
+					if (type == OPEN) return result + "connected";
+					if (type == CLOSE) return result + "is offline";
+					if (type == ERROR) return result + "encounters an error";
+					return result + msgData.msg;
+				}
+				
+				function handleMsg(message) {
+					if (!message) {
+						return null;
+					}
+					var msgData = JSON.parse(message);
+					if (!msgData) {
+						return null;
+					}
+					var customerId = msgData.customerId;
+					var type = msgData.type;
+					if (type == OPEN) {
+						addCustomer(customerId);
+					} else if (type == CLOSE) {
+						removeCustomer(customerId);
+					} else if (type == ERROR) {
+					} else { // common message
+						addMessage(customerId, msgData.msg, false);
+					}
+				}
+				
+				function startCommunication() {
+					socket = io();
+					if (!socket) {
+						shutDown("Fail to connect to server, please reload this page!");
+						return;
+					}
+					
+					sendMsg("server", "ABCLtd Company Agent ready!");
+					
+					socket.on(CHAT_MSG, function(msg){
+						if (msg) {
+							handleMsg(msg);
+						}
+					}); 
+					socket.on(DISCONNECT, function(){
+						shutDown("Connection to server lost, please reload this page!");
+					}); 
+				}
+				
+				function Message(customerId, msg) {
+					this.customerId = customerId;
+					this.msg = msg;
+				}
+				
+				function sendMsg(customerId, msg) {
+					if (msg && socket) {
+						socket.emit(CHAT_MSG, JSON.stringify(new Message(customerId, msg)));
+					}
+				}
+				
+				$(selectors.SEND_MSG_BTN).on("click", function() {
+					var msg = $(selectors.INPUT_MSG)[0].value;
+					if (msg) {
+						var customerId = $(this).attr(selectors.CUSTOMER_ID);
+						if (customerId) {
+							sendMsg(customerId, msg);
+							addMessage(customerId, msg, true);
+						}
+						$(selectors.INPUT_MSG)[0].value = "";
+					}
+				});
+				
+				$(selectors.ONLINE_CUSTOMERS).on("click", "." + selectors.CUSTOMER_BLOCK, function() {
+					var id = $(this).attr(selectors.CUSTOMER_ID);
+					var customer = onlineCustomers[id];
+					if (customer) {
+						customer.showChatBox();
+					}
+				});
+				
+				$(selectors.CLOSE_CHAT_BTN).on("click", function() {
+					var chatBox = $(selectors.CHAT_BOX);
+					chatBox.css(styles.VISIBILITY, styles.HIDDEN);
+					$(selectors.IN_CHAT_UI_BLOCKER).css(styles.VISIBILITY, styles.HIDDEN);
+					$("." + selectors.IN_CHAT_CUSTOMER_BLOCK).removeClass(selectors.IN_CHAT_CUSTOMER_BLOCK);
+				});
+				
+				startCommunication();
+			}
+			
+			setupLiveChat();
+		</script>
+		<!-- End of LiveChat code -->
+	</body>
+</html>

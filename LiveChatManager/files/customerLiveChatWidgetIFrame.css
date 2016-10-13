@@ -1,0 +1,123 @@
+#liveChat-Widget #liveChat-minimized {
+    position: fixed;
+    bottom: 0px;
+    right: 15px;
+    width: 250px;
+    height: 53px;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: 2147483639;
+    background: transparent;
+    border: 0px;
+    transition: transform 0.2s ease-in-out;
+    backface-visibility: hidden;
+    opacity: 1;
+    transform: translateY(0%);
+}
+
+#liveChat-Widget #liveChat-full {
+    position: fixed;
+    bottom: 0px;
+    right: 15px;
+    width: 400px;
+    height: 450px;
+    overflow: hidden;
+    visibility: visible;
+    z-index: 2147483639;
+    background: transparent;
+    border: 0px;
+    transition: transform 0.2s ease-in-out;
+    backface-visibility: hidden;
+    transform: translateY(0%);
+    opacity: 1;
+}
+
+#liveChat-Widget  #lc-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 6;
+}
+
+#liveChat-Widget  .lc-outline {
+    border: 0;
+    padding: 15px 15px 0;
+    box-shadow: none;
+}
+
+#liveChat-Widget .lc-widget-header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 3px 3px 0 0;
+    padding: 0 7px 6px 8px;
+    font-weight: 700;
+    background-color: #45494b !important;
+    box-shadow: 0 1px 0 #326bc0;
+    color: #fff;
+    font-size: 16px;
+    text-shadow: none;
+    text-decoration: none;
+    display: block;
+}
+
+#liveChat-Widget  .lc-content {
+    padding: 0;
+    background: #fff;
+    border-radius: 4px 4px 0 0!important;
+    box-shadow: 0 2px 25px rgba(0,0,0,.2)!important;
+    background-clip: padding-box!important;
+    border: 0!important;
+    height: 100%;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#liveChat-Widget table, #liveChat-Widget td, #liveChat-Widget th, #liveChat-Widget tr {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+#liveChat-Widget #lc-title-text {
+    color: #fff;
+    font-size: 16px!important;
+    font-weight: 400!important;
+    text-shadow: none!important;
+    margin-left: 3px;
+}
+
+#liveChat-Widget #lc-close-chat {
+    margin-right: 5px;
+    display: block;
+    margin-left: 0;
+    box-sizing: content-box;
+}
+
+#liveChat-Widget #lc-minimize {
+    padding-top: 3px;
+    margin-right: 8px;
+    margin-top: 0;
+}
+
+#liveChat-Widget .lc-title-button {
+    display: block;
+    cursor: pointer;
+    float: right;
+    background-repeat: no-repeat;
+    background-color: #45494b !important;
+}
+
+#liveChat-Widget #lc-chat-iframe iframe {
+    height: 100%;
+	width: 100%;
+    border: none;
+}

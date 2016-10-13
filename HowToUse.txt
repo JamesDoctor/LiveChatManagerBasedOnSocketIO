@@ -1,0 +1,50 @@
+I. Preparation
+
+Follow instructions in http://socket.io/download/ :
+
+A. Setup Socket.IO Server
+* Download Node.js from https://nodejs.org/en/ , and this will be the socket.IO server:
+* Install Node.js under "XXX/nodejs";
+* Open the cmd shell and goto "C:\Users\huangjy\nodejs\", run "npm install socket.io";
+* In this shell, also run "npm install --save express@4.10.2" according to http://socket.io/get-started/chat/ .
+
+B. Setup the Socket.IO Client
+* Download socket.IO client "https://github.com/socketio/socket.io-client/blob/master/socket.io.js" into ".../LiveChatManager/files/" folder (this will be included in our webpages).
+
+C. Learn the chat example from http://socket.io/get-started/ (our code will also be based on this example)
+
+
+-----------------------------------------------------
+
+
+II. Basic Demo Steps
+A. Run Node.js server (suppose your Node.js installation folder is "XXX/nodejs")
+* Copy the whole folder "LiveChatManager" under "XXX/nodejs";
+* Open command shell and goto "XXX/nodejs", run "npm install --save express@4.10.2", "npm install --save socket.io", and "node LiveChatManager/index.js";
+* Now the server is started outputing the below messages:
+"
+listening on *:10082
+listening on *:10080
+listening on *:10081
+"
+
+B. Open Company Agent
+After our Node.js server is running, you can open " http://localhost:10081/CompanyAgent?company=ABCLtd ", which is the Company Agent Workplace.
+
+C. Open Customer Web Page
+Goto ".../WebPages", open "ExampleClientWebPage.html" in browser, click "Start Chat" button;
+
+-----------------------------------------------------
+
+III. Add a javascript snippet into a customer web page to enable the live chat
+Suppose there is a raw customer web page like ".../WebPages/rawClientWebPage.html":
+1. Open this raw customer web page in an editor;
+2. Before "</body>" in this web page, insert the snippet in ".../WebPages/toInsertJS.html" (then the raw customer web page will have the contents like ".../WebPages/rawClientWebPageWithToInsertJSAdded.html");
+3. Now open the modified customer web page, and you will see the live chat widget, and you can use it to chat with company agent (if both server is running, and company agent web page is opened).
+
+-----------------------------------------------------
+
+All the webpages have been tested in IE-11 (Click "Allow blocked content" if IE restricts the running of JS of the web page by default), FireFox-45.4.0, Chrome-53.0.2785.143 m (64-bit)
+
+
+

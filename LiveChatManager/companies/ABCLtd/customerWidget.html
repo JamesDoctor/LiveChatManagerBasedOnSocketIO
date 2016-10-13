@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="http://localhost:10082/Files?file=customerLiveChatWidgetInternal.css">
+		<script type="text/javascript" src="http://localhost:10082/Files?file=jquery-3.1.1.js"></script>
+		<script type="text/javascript" src="http://localhost:10082/Files?file=socket.io.js"></script>
+		<script type="text/javascript" src="http://localhost:10082/Files?file=clientLiveChatWidgetInternal.js"></script>
+	</head>
+	<body
+		<table class="lc-content" cellspacing="0" cellpadding="0"><tbody>
+			<tr id="lc-chat-container"><td>
+				<div id="lc-chatRecords"></div>
+			</td></tr>
+			<tr id="lc-chat-control"><td>
+				<div id="lc-startChat-container">
+					<input type="button" name="startChat" id="lc-startChat" value="Start Chat" class="lc-startChatBtn">
+				</div>
+				<div id="lc-sendMessage-container">
+					<div><input type="text" name="message" id="lc-message" class="lc-inputMessage"></div>
+					<div><input type="button" name="sendMessage" id="lc-sendMessage" value="Send Message" class="lc-sendMessageBtn"></div>
+				</div>
+			</td></tr>
+		</tbody></table>
+	</body>
+</html>

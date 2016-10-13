@@ -1,0 +1,161 @@
+#lc-company-agent {
+	overflow : auto;
+}
+
+#lc-company-agent  #lc-online-customers {
+    width: 100%;
+	color: #fff;
+    text-decoration: none;
+}
+
+#lc-company-agent  #lc-online-customers  a {
+    text-decoration: none;
+}
+
+#lc-company-agent  .lc-unread-messages {
+	float : right;
+}
+
+#lc-company-agent  #lc-online-customers tr, #lc-company-agent  #lc-online-customers td{
+    padding: 3px;
+	border: 2px;
+	border-color: #000;
+}
+
+#lc-company-agent  .lc-customer-block {
+    padding: 3px;
+    margin: 3px;
+}
+
+#lc-company-agent .lc-content {
+    padding: 0;
+    background: #fff;
+    border-radius: 4px 4px 0 0!important;
+    box-shadow: 0 2px 25px rgba(0,0,0,.2)!important;
+    background-clip: padding-box!important;
+    border: 0!important;
+    height: 100%;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#lc-company-agent #lc-chat-box {
+    padding: 0;
+    background: #fff;
+    border-radius: 4px 4px 0 0!important;
+    box-shadow: 0 2px 25px rgba(0,0,0,.2)!important;
+    background-clip: padding-box!important;
+    border: 0!important;
+    height: 100%;
+    width: 50%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+	visibility: hidden;
+	position:absolute;
+    z-index: 1001;
+}
+
+#lc-company-agent table, #lc-company-agent td, #lc-company-agent th, #lc-company-agent tr {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+#lc-company-agent #lc-title-text {
+    color: #fff;
+    font-size: 16px!important;
+    font-weight: 400!important;
+    text-shadow: none!important;
+    margin-left: 3px;
+}
+
+#lc-company-agent #lc-close-chat {
+    margin-right: 5px;
+    display: block;
+    margin-left: 0;
+    box-sizing: content-box;
+}
+
+#lc-company-agent .lc-title-button {
+    display: block;
+    cursor: pointer;
+    float: right;
+    background-repeat: no-repeat;
+    background-color: #45494b !important;
+}
+
+#lc-company-agent #lc-chatRecords {
+    height: 200px;
+    border-top-width: 0;
+    border-radius: 0;
+    background-clip: padding-box;
+    border: none;
+    box-shadow: none;
+    position: relative;
+    width: 100%;
+    overflow: auto;
+}
+
+#lc-company-agent  #lc-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 6;
+}
+
+#lc-company-agent  .lc-outline {
+    border: 0;
+    padding: 15px 15px 0;
+    box-shadow: none;
+}
+
+#lc-company-agent .lc-widget-header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 3px 3px 0 0;
+    padding: 0 7px 6px 8px;
+    font-weight: 700;
+    background-color: #45494b !important;
+    box-shadow: 0 1px 0 #326bc0;
+    color: #fff;
+    font-size: 16px;
+    text-shadow: none;
+    text-decoration: none;
+    display: block;
+}
+
+#lc-company-agent .lc-customer-block-row {
+    font-weight: bold;
+	background: lightgrey;
+}
+
+#lc-company-agent  .lc-in-chat-customer-block {
+	background: lightgreen !important;
+}
+
+#lc-company-agent  .lc-to-handle-customer-block {
+	background: lightpink !important;
+}
+
+#lc-company-agent  .lc-in-chat-UI-blocker {
+     background-color: #FFFFFF;
+     opacity: 0.6; /* CSS3 */
+     filter: alpha(opacity=60); /* For IE <= 8 */ 
+     top: 0px;
+     left: 0px;
+     height: 100%;
+     width: 100%;
+     position: fixed;
+	 visibility: hidden;
+     z-index: 1000;
+ }

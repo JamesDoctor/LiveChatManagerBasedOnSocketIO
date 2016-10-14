@@ -29,14 +29,14 @@ listening on *:10081
 "
 
 B. Open Company Agent
-After our Node.js server is running, you can open " http://localhost:10081/CompanyAgent?company=ABCLtd ", which is the Company Agent Workplace.
+After our Node.js server is running, you can open " http://localhost:10081/CompanyAgent?company=ABCLtd ", which is the Company Agent Workplace. Pay attention to the URL parameter "comnpany=ABCLtd". You can use other value like "company=XXX" as well because this prototype is designed to support multiple companies. If you change the value of this parameter, then in the below steps, you also need to update the customer webpage to use the same value. This also means that you can open multiple company agent webpages for different companies at the same time.
 (1) This page displays the total count of online customers in the header;
 (2) For each online customer, there will be a row in left of the page. Each row shows the customerId and the count of unread messages from this customer;
 (3) Clicking a customer's row will let the chat dialog box for this customer show up in right of the page. Once this dialog box comes out, the unread messages of corresponding customer will become 0. And this customer's row will change to green;
 (4) If a customer has unread messages > 0, this customer's row will change to red. Otherwise, if the chat dialog box for this customer does not show up, then this customer's row will be grey (which is also the initial color once a customer becomes online).
 
 C. Open Customer Web Page
-Goto ".../WebPages", open "ExampleABCLtdClientWebPage.html" in browser, click "Start Chat" button;
+Goto ".../WebPages", open "ExampleABCLtdClientWebPage.html" in browser, click "Start Chat" button. If you open this file in an editor, you will see there is a line '<iframe src="http://localhost:10080/Customer?company=ABCLtd" />' in this file, where the URL parameter is "company=ABCLtd". You can change its value, but it should be the same as that used in your company agent URL as mentioned above. This also means that you can open multiple customer webpages for different companies at the same time.
 
 -----------------------------------------------------
 
@@ -44,6 +44,7 @@ III. Add a javascript snippet into a customer web page to enable the live chat
 Suppose there is a raw customer web page like ".../WebPages/rawClientWebPage.html":
 1. Open this raw customer web page in an editor;
 2. Before "</body>" in this web page, insert the snippet in ".../WebPages/toInsertJS.html" (then the raw customer web page will have the contents like ".../WebPages/rawClientWebPageWithToInsertJSAdded.html");
+* Note that in this "toInsertJS.html", there is a line 'lc.src = "http://localhost:10082/Files?company=ABCLtd&file=enableLiveChat.js';", where the URL parameter is "company=ABCLtd". You can change its value, but it should be the same as that used in your company agent URL as mentioned above.
 3. Now open the modified customer web page, and you will see the live chat widget, and you can use it to chat with company agent (if both server is running, and company agent web page is opened).
 
 -----------------------------------------------------

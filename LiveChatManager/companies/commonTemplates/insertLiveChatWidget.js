@@ -19,7 +19,7 @@
 							'</a>' +					
 						'</td></tr>' +		
 						'<tr id="lc-chat-iframe"><td>' +		
-							'<iframe src="http://localhost:10080/Customer?company=ABCLtd" />' +	
+							'<iframe src="http://localhost:10080/Customer?company={LIVE_CHAT_COMPANY}" />' +	
 						'</td></tr>' +	
 					'</tbody></table>' +
 				'</div>' +		

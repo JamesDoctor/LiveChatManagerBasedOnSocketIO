@@ -3,6 +3,10 @@
 		var socket = null;
 		var CHAT_MSG = "chat message";
 		var DISCONNECT = "disconnect";
+		var CONNECT_TO_SERVER = "connectServer";
+		var SERVER_ACKNOWLEDGED_CONNECT = "serverAcqConn";
+		var FAIL_CONNECT_COMPANY_AGENT = 'failConnectCompanyAgent'
+		var COMPANY = "{LIVE_CHAT_COMPANY}";
 		var selectors = {
 			CHAT_RECORDS : "#lc-chatRecords",
 			START_CHAT_CONTAINER : "#lc-startChat-container",
@@ -29,8 +33,18 @@
 				return;
 			}
 			
-			appendChatRecord("Connected to Customer Service.");
-			toggleChatContoller();
+			socket.emit(CONNECT_TO_SERVER, COMPANY);
+			
+			socket.on(SERVER_ACKNOWLEDGED_CONNECT, function() {
+				appendChatRecord("Connected to Customer Service.");
+				toggleChatContoller();
+			});
+			
+			socket.on(FAIL_CONNECT_COMPANY_AGENT, function() {
+				socket = null;
+				appendChatRecord("Failed to connect " + COMPANY + " agent. Please try again.");
+				toggleChatContoller();
+			});
 					
 			socket.on(CHAT_MSG, function(msg){
 				if (msg) {
@@ -38,6 +52,7 @@
 					appendChatRecord(msg);
 				}
 			}); 
+			
 			socket.on(DISCONNECT, function(){
 				socket = null;
 				appendChatRecord("Chat closed! Please reload this page");

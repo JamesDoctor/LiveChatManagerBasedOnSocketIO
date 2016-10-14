@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="http://localhost:10082/Files?file=companyAgentLiveChat.css">
 	</head>
 	<body>
-	    <H1>Hello, this is ABCLtd Customer Service Agent!</H1>
+	    <H1>Hello, this is {LIVE_CHAT_COMPANY} Customer Service Agent!</H1>
 		
 		<div id="lc-company-agent">
 		    <div class="lc-in-chat-UI-blocker"></div>
@@ -48,6 +48,9 @@
 				var OPEN = 0, MSG = 1, CLOSE = 2, ERROR = 3;
 				var CHAT_MSG = "chat message";
 				var DISCONNECT = "disconnect";
+				var CONNECT_TO_SERVER = "connectServer";
+				var SERVER_ACKNOWLEDGED_CONNECT = "serverAcqConn";
+				var COMPANY = "{LIVE_CHAT_COMPANY}";
 				var totalOnlineCustomers = 0;
 				var socket = null;
 				var onlineCustomers = {};
@@ -266,7 +269,11 @@
 						return;
 					}
 					
-					sendMsg("server", "ABCLtd Company Agent ready!");
+					socket.emit(CONNECT_TO_SERVER, COMPANY);
+					
+					socket.on(SERVER_ACKNOWLEDGED_CONNECT, function() {
+						sendMsg("server", COMPANY + " is ready!");
+					});
 					
 					socket.on(CHAT_MSG, function(msg){
 						if (msg) {

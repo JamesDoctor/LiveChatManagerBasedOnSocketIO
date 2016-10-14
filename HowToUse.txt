@@ -32,7 +32,7 @@ B. Open Company Agent
 After our Node.js server is running, you can open " http://localhost:10081/CompanyAgent?company=ABCLtd ", which is the Company Agent Workplace.
 
 C. Open Customer Web Page
-Goto ".../WebPages", open "ExampleClientWebPage.html" in browser, click "Start Chat" button;
+Goto ".../WebPages", open "ExampleABCLtdClientWebPage.html" in browser, click "Start Chat" button;
 
 -----------------------------------------------------
 

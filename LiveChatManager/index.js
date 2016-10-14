@@ -12,6 +12,10 @@ var SERVER_MSG_CUSTOMER = 'server';
 var CHAT_MSG = 'chat message';
 var CONNECTION = 'connection';
 var DISCONNECT = 'disconnect';
+var CONNECT_TO_SERVER = 'connectServer';
+var SERVER_ACKNOWLEDGED_CONNECT = 'serverAcqConn';
+var DUMMY_MSG = 'NA';
+var FAIL_CONNECT_COMPANY_AGENT = 'failConnectCompanyAgent'
 
 function CustomerMsg(msg, type, id) {
 	this.msg = msg;
@@ -140,6 +144,7 @@ function CompanyAgentSessions() {
 	if (typeof this.addCompanyAgentSession !== "function") {
 		CompanyAgentSessions.prototype.addCompanyAgentSession = function(company, socket) {
 			if (!company) return;
+			console.log('Add company agent session for ' + company);
 			this.communications[company] = new Communication(socket);
 		};
 	}
@@ -151,6 +156,7 @@ function CompanyAgentSessions() {
 				communication.addCustomer(customer);
 				return true;
 			}
+			console.log('Cannot find company agent session of ' + company + ', failed to add its customer!');
 			return false;
 		};
 	}
@@ -177,23 +183,40 @@ function CompanyAgentSessions() {
 }
 
 var companyAgentSessions = new CompanyAgentSessions();
-var companyAgentIOInitialized = false;
-var customerIOInitialized = false;
+var rf=require("fs");
+
+function getSharedFilePath(fileName) {
+	return __dirname + '/shared/' + fileName;
+}
+
+function getCompanySpecificFileData(fileName, company) {
+	var path = __dirname + '/companies/commonTemplates/' + fileName; // We can support special templates for specific companies in future
+	var fileData = rf.readFileSync(path,'utf-8');
+	if (fileData) {
+		//console.log('Get file data of "' + path +'", and the company placeholder replaced by ' + company);
+		return fileData.replace(/{LIVE_CHAT_COMPANY}/g, company);
+	}
+	return null;
+}
 
 function customerServerSetup(path, app, io) {
 	app.get(path, function(req, res){
 		var company = req.query.company;
 		if (!company) return;
-		res.sendFile(__dirname + '/companies/' + company + '/customerWidget.html');
-		
-		if (!customerIOInitialized) {
-			customerIOInitialized = true;
-			io.on(CONNECTION, function(socket){
-				var customer = new Customer(socket);
-				console.log(customer.id + ' connected');
-				companyAgentSessions.addCustomer(company, customer);
-			});
-		}
+		res.send(getCompanySpecificFileData('customerWidget.html', company));
+		//console.log('Handle a get request from customer of ' + company);
+	});
+	
+	io.on(CONNECTION, function(socket){
+		socket.on(CONNECT_TO_SERVER, function(company) {
+			var customer = new Customer(socket);
+			console.log(customer.id + ' connected');
+			if (companyAgentSessions.addCustomer(company, customer)) {
+				socket.emit(SERVER_ACKNOWLEDGED_CONNECT, DUMMY_MSG);
+			} else {
+				socket.emit(FAIL_CONNECT_COMPANY_AGENT, DUMMY_MSG);
+			}
+		});
 	});
 }
 
@@ -201,33 +224,41 @@ function companyAgentServerSetup(path, app, io) {
 	app.get(path, function(req, res){
 		var company = req.query.company;
 		if (!company) return;
-		res.sendFile(__dirname + '/companies/' + company + '/companyAgentWorkplace.html');
-		console.log('setup company agent for: ' + company);
+		res.send(getCompanySpecificFileData('companyAgentWorkplace.html', company));
+		//console.log('Handle a get request from ' + company + ' agent');
+	});
+	
+	io.on(CONNECTION, function(socket){
+		socket.on(CONNECT_TO_SERVER, function(company) {
+			console.log(company + ' agent is connected.');
+			companyAgentSessions.addCompanyAgentSession(company, socket);
+			socket.emit(SERVER_ACKNOWLEDGED_CONNECT, DUMMY_MSG);
 		
-		if (!companyAgentIOInitialized) {
-			companyAgentIOInitialized = true;
-			io.on(CONNECTION, function(socket){
-				console.log(company + ' agent is connected.');
-				companyAgentSessions.addCompanyAgentSession(company, socket);
-				
-				socket.on(DISCONNECT, function(){
-					console.log(company + ' Agent disconnected');
-					companyAgentSessions.removeCompanyAgentSession(company);
-				});
-				
-				socket.on(CHAT_MSG, function(msg){
-					console.log('message from ' + company + ' Agent: ' + msg);
-					companyAgentSessions.sendMsgToCustomer(company, getCompanyAgentMsg(msg));
-				});
+			socket.on(DISCONNECT, function(){
+				console.log(company + ' Agent disconnected');
+				companyAgentSessions.removeCompanyAgentSession(company);
 			});
-		}
+			
+			socket.on(CHAT_MSG, function(msg){
+				console.log('message from ' + company + ' Agent: ' + msg);
+				companyAgentSessions.sendMsgToCustomer(company, getCompanyAgentMsg(msg));
+			});
+		});
 	});
 }
 
 function filesServerSetup(path, app) {
 	app.get(path, function(req, res){
-		if (req.query.file)
-			res.sendFile(__dirname + '/files/' + req.query.file);
+		if (req.query.file) {
+			if (req.query.company) {
+				//console.log('Send file "' + req.query.file +'" with company specific information replaced');
+				res.send(getCompanySpecificFileData(req.query.file, req.query.company));
+			} else {
+				var filePath = getSharedFilePath(req.query.file);
+				//console.log('Directly send file "' + filePath +'"');
+				res.sendFile(filePath);
+			}
+		}
 	});
 }
 

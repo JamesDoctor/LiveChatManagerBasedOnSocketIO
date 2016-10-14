@@ -18,6 +18,6 @@
 	
 	insertJS('http://localhost:10082/Files?file=jquery-3.1.1.js');
 	insertCSS('http://localhost:10082/Files?file=customerLiveChatWidgetIFrame.css');
-	insertJS('http://localhost:10082/Files?file=insertLiveChatWidget.js');
-	insertJS('http://localhost:10082/Files?file=clientLiveChatWidgetIFrame.js');
+	insertJS('http://localhost:10082/Files?company={LIVE_CHAT_COMPANY}&file=insertLiveChatWidget.js');
+	insertJS('http://localhost:10082/Files?file=customerLiveChatWidgetIFrame.js');
 })();

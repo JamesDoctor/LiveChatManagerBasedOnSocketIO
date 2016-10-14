@@ -30,6 +30,10 @@ listening on *:10081
 
 B. Open Company Agent
 After our Node.js server is running, you can open " http://localhost:10081/CompanyAgent?company=ABCLtd ", which is the Company Agent Workplace.
+(1) This page displays the total count of online customers in the header;
+(2) For each online customer, there will be a row in left of the page. Each row shows the customerId and the count of unread messages from this customer;
+(3) Clicking a customer's row will let the chat dialog box for this customer show up in right of the page. Once this dialog box comes out, the unread messages of corresponding customer will become 0. And this customer's row will change to green;
+(4) If a customer has unread messages > 0, this customer's row will change to red. Otherwise, if the chat dialog box for this customer does not show up, then this customer's row will be grey (which is also the initial color once a customer becomes online).
 
 C. Open Customer Web Page
 Goto ".../WebPages", open "ExampleABCLtdClientWebPage.html" in browser, click "Start Chat" button;
